@@ -4,12 +4,14 @@ import javaFlacEncoder.FLACEncoder;
 import javaFlacEncoder.FLACFileOutputStream;
 import javaFlacEncoder.StreamConfiguration;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import com.android.speechapi.AudioCacheFile;
+import com.android.speechapi.AudioFormat;
+import com.android.speechapi.AudioInputStream;
+import com.android.speechapi.AudioSystem;
 
 /*************************************************************************************************************
  * Class that contains methods to encode Wave files to FLAC files
@@ -31,17 +33,17 @@ public class FlacEncoder {
      * @param inputFile  Input wave file
      * @param outputFile Output FLAC file
      */
-    public void convertWaveToFlac(File inputFile, File outputFile) {
+    public void convertWaveToFlac(AudioCacheFile inputFile, AudioCacheFile outputFile) {
 
 
         StreamConfiguration streamConfiguration = new StreamConfiguration();
-        streamConfiguration.setSampleRate(8000);
+        streamConfiguration.setSampleRate((int) inputFile.getAudioFormat().getSampleRate());
         streamConfiguration.setBitsPerSample(16);
         streamConfiguration.setChannelCount(1);
 
 
         try {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputFile);
+            AudioInputStream audioInputStream = inputFile.getAudioInputStream();
             AudioFormat format = audioInputStream.getFormat();
 
             int frameSize = format.getFrameSize();
@@ -88,18 +90,6 @@ public class FlacEncoder {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-
-    /**
-     * Converts a wave file to a FLAC file(in order to POST the data to Google and retrieve a response) <br>
-     * Sample Rate is 8000 by default
-     *
-     * @param inputFile  Input wave file
-     * @param outputFile Output FLAC file
-     */
-    public void convertWaveToFlac(String inputFile, String outputFile) {
-        convertWaveToFlac(new File(inputFile), new File(outputFile));
     }
 
     /**
