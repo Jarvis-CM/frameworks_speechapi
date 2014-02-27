@@ -15,6 +15,10 @@ public class AudioCacheFile {
     public AudioCacheFile() {
         mOutputStream = new ByteArrayOutputStream();
     }
+
+	public void close() {
+		// TODO: Implement this method
+	}
     
     public OutputStream getOutputStream() {
         return mOutputStream;

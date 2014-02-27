@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import com.android.speechapi.AudioCacheFile;
 
 /***************************************************************
  * Class that submits FLAC audio and retrieves recognized text
@@ -213,16 +214,13 @@ public class Recognizer {
      * @return Returns a GoogleResponse, with the response and confidence score
      * @throws Exception Throws exception if something goes wrong
      */
-    public GoogleResponse getRecognizedDataForWave(File waveFile, int maxResults) throws Exception {
+    public GoogleResponse getRecognizedDataForWave(AudioCacheFile waveFile, int maxResults) throws Exception {
         FlacEncoder flacEncoder = new FlacEncoder();
-        File flacFile = new File(waveFile + ".flac");
+        AudioCacheFile flacFile = new AudioCacheFile();
 
         flacEncoder.convertWaveToFlac(waveFile, flacFile);
 
         String response = rawRequest(flacFile, maxResults);
-
-        //Delete converted FLAC data
-        flacFile.delete();
 
         GoogleResponse googleResponse = new GoogleResponse();
         parseResponse(response, googleResponse);
@@ -237,8 +235,9 @@ public class Recognizer {
      * @return Returns a GoogleResponse, with the response and confidence score
      * @throws Exception Throws exception if something goes wrong
      */
+	 @Deprecated
     public GoogleResponse getRecognizedDataForWave(String waveFile, int maxResults) throws Exception {
-        return getRecognizedDataForWave(new File(waveFile), maxResults);
+        return null;
     }
 
     /**
@@ -249,7 +248,7 @@ public class Recognizer {
      * @return Returns a GoogleResponse, with the response and confidence score
      * @throws Exception Throws exception if something goes wrong
      */
-    public GoogleResponse getRecognizedDataForFlac(File flacFile, int maxResults) throws Exception {
+    public GoogleResponse getRecognizedDataForFlac(AudioCacheFile flacFile, int maxResults) throws Exception {
         String response = rawRequest(flacFile, maxResults);
         GoogleResponse googleResponse = new GoogleResponse();
         parseResponse(response, googleResponse);
@@ -264,8 +263,9 @@ public class Recognizer {
      * @return Returns a GoogleResponse, with the response and confidence score
      * @throws Exception Throws exception if something goes wrong
      */
+	@Deprecated
     public GoogleResponse getRecognizedDataForFlac(String flacFile, int maxResults) throws Exception {
-        return getRecognizedDataForFlac(new File(flacFile), maxResults);
+        return null;
     }
 
     /**
@@ -276,7 +276,7 @@ public class Recognizer {
      * @return Returns a GoogleResponse, with the response and confidence score
      * @throws Exception Throws exception if something goes wrong
      */
-    public GoogleResponse getRecognizedDataForWave(File waveFile) throws Exception {
+    public GoogleResponse getRecognizedDataForWave(AudioCacheFile waveFile) throws Exception {
         return getRecognizedDataForWave(waveFile, 1);
     }
 
@@ -300,7 +300,7 @@ public class Recognizer {
      * @return Returns a GoogleResponse, with the response and confidence score
      * @throws Exception Throws exception if something goes wrong
      */
-    public GoogleResponse getRecognizedDataForFlac(File flacFile) throws Exception {
+    public GoogleResponse getRecognizedDataForFlac(AudioCacheFile flacFile) throws Exception {
         return getRecognizedDataForFlac(flacFile, 1);
     }
 
@@ -370,7 +370,7 @@ public class Recognizer {
      * @return Returns the raw, unparsed response from Google
      * @throws Exception Throws exception if something went wrong
      */
-    private String rawRequest(File inputFile, int maxResults) throws Exception {
+    private String rawRequest(AudioCacheFile inputFile, int maxResults) throws Exception {
         URL url;
         URLConnection urlConn;
         OutputStream outputStream;
@@ -407,7 +407,7 @@ public class Recognizer {
         outputStream = urlConn.getOutputStream();
 
 
-        FileInputStream fileInputStream = new FileInputStream(inputFile);
+        InputStream fileInputStream = inputFile.getInputStream();
 
         byte[] buffer = new byte[256];
 
